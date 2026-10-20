@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Todo</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="page-header"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="m8 12 3 3 5-6"/></svg></span><h1>Todo</h1></header>
+      <form id="capture-form" class="capture" aria-label="Add a task">
+        <label class="sr-only" for="capture-title">What would you like to work on?</label>
+        <div id="capture-editor" class="capture-editor">
+          <div id="capture-backdrop" class="capture-backdrop" aria-hidden="true"><div id="capture-highlight" class="capture-highlight"></div></div>
+          <textarea id="capture-title" class="capture-title" name="title" rows="3" maxlength="20000" placeholder="What’s on your mind?&#10;You can use #project-name to add the task into a project." required disabled></textarea>
+        </div>
+        <div class="capture-toolbar">
+          <button id="capture-submit" class="button primary" type="submit" disabled>Add task</button>
+        </div>
+        <div class="capture-selection-row">
+          <label class="capture-picker"><span class="sr-only">Save new task to</span><select id="capture-status" name="status" disabled><option value="backlog">Backlog</option><option value="today">Today</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></label>
+          <label class="capture-picker"><span class="sr-only">Project for new task</span><select id="capture-project" name="projectId" disabled><option value="__unresolved__" hidden disabled>No project</option><option value="">No project</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></label>
+        </div>
+        <p id="capture-error" class="field-error" role="alert" hidden></p>
+      </form>
+      <section class="board" aria-label="Your tasks">
+        <div class="filter-row">
+          <label class="search-field"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.75" cy="8.75" r="5.25"/><path d="m12.5 12.5 4 4"/></svg><span class="sr-only">Search tasks</span><input id="task-search" type="search" placeholder="Search tasks" autocomplete="off" disabled></label>
+          <label class="project-filter"><span class="sr-only">Filter tasks by project</span><select id="project-filter" disabled><option value="all">All projects</option><option value="none">No project</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></label>
+        </div>
+        <div id="project-sync-error" class="error-banner" role="alert" hidden><span id="project-sync-error-text"></span><button id="project-sync-retry" class="text-button" type="button">Retry</button></div>
+        <div id="board-error" class="error-banner" role="alert" hidden><span id="board-error-text"></span><button id="retry-button" class="text-button" type="button">Try again</button></div>
+        <div id="task-panel" class="task-panel" aria-busy="true" tabindex="-1">
+          <div id="loading-state" class="loading-state" role="status"><span class="loading-dot"></span>Opening your list…</div>
+          <div id="task-sections" hidden>
+            <section class="task-section" aria-labelledby="today-heading"><div class="section-heading"><h2 id="today-heading">Today</h2><span id="today-count" class="section-count" aria-label="0 tasks">0</span></div><ul id="today-list" class="task-list" aria-label="Today tasks"></ul><div id="today-empty" class="empty-state" hidden><p id="today-empty-copy">Nothing planned for today.</p></div></section>
+            <section class="task-section backlog-section" aria-labelledby="backlog-heading"><div class="section-heading"><h2 id="backlog-heading">Backlog</h2><span id="backlog-count" class="section-count" aria-label="0 tasks">0</span></div><ul id="backlog-list" class="task-list" aria-label="Backlog tasks"></ul><div id="backlog-empty" class="empty-state" hidden><p id="backlog-empty-copy">Keep ideas here for when you’re ready.</p></div></section>
+          </div>
+        </div>
+      </section>
+    </main>
+    <dialog id="task-dialog" class="dialog" aria-labelledby="task-dialog-title"><form id="edit-form" class="dialog-content"><div class="dialog-header"><h2 id="task-dialog-title">Edit task</h2><button class="icon-button" type="button" data-close-dialog="task-dialog" aria-label="Close task editor"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div><label class="form-field">Idea<textarea id="edit-title" rows="5" maxlength="20000" required></textarea></label><div class="form-columns"><label class="form-field">Project<select id="edit-project"><option value="">No project</option></select></label><label class="form-field">List<select id="edit-status"><option value="today">Today</option><option value="backlog">Backlog</option></select></label></div><p id="edit-error" class="field-error" role="alert" hidden></p><div class="dialog-actions"><button id="delete-task" class="text-button danger" type="button">Delete task</button><div class="action-group"><button class="button secondary" type="button" data-close-dialog="task-dialog">Cancel</button><button id="edit-save" class="button primary" type="submit">Save changes</button></div></div></form></dialog>
+    <dialog id="confirm-dialog" class="dialog confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-copy"><div class="dialog-content"><h2 id="confirm-title">Delete this task?</h2><p id="confirm-copy" class="dialog-description"></p><p id="confirm-error" class="field-error" role="alert" hidden></p><div class="dialog-actions confirm-actions"><button id="confirm-cancel" class="button secondary" type="button">Cancel</button><button id="confirm-submit" class="button destructive" type="button">Delete task</button></div></div></dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toast-copy"></span><button id="toast-dismiss" class="icon-button" type="button" aria-label="Dismiss notification"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-todo",
+  "version": "0.4.1",
+  "description": "A local Todo sidebar for Codex.",
+  "license": "MIT",
+  "author": {
+    "name": "Codex Todo contributors"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Todo",
+        "shortDescription": "Capture ideas and open project chats",
+        "longDescription": "A local Todo board with Today and Backlog. Capture ideas with optional project tags, use the bundled capture skills, and open a prepared Codex chat in the selected project.",
+        "developerName": "Codex Todo contributors",
+        "category": "Productivity",
+        "capabilities": [
+          "Interactive"
+        ],
+        "logo": "./assets/icon.svg",
+        "composerIcon": "./assets/icon.svg",
+        "defaultPrompt": [
+          "Open my Todo board.",
+          "Add an idea to my backlog."
+        ]
+      }
+    }
+  }
+}

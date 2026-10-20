@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "todo": {
+      "command": "node",
+      "args": [
+        "${CODEX_PLUGIN_ROOT}/dist/server.mjs"
+      ],
+      "cwd": "${CODEX_PLUGIN_ROOT}"
+    }
+  }
+}

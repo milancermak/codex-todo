@@ -1,0 +1,20 @@
+{
+  "name": "todo",
+  "interface": {
+    "displayName": "Codex Todo"
+  },
+  "plugins": [
+    {
+      "name": "codex-todo",
+      "source": {
+        "source": "local",
+        "path": "./plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

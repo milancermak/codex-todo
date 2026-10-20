@@ -1,0 +1,27 @@
+{
+  "name": "codex-todo",
+  "version": "0.4.1",
+  "description": "A local Todo sidebar for Codex.",
+  "author": {
+    "name": "Codex Todo contributors"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Todo",
+    "shortDescription": "Capture ideas and open project chats",
+    "longDescription": "A local Todo board with Today and Backlog. Capture ideas with optional project tags, use the bundled capture skills, and open a prepared Codex chat in the selected project.",
+    "developerName": "Codex Todo contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive"
+    ],
+    "logo": "./assets/icon.svg",
+    "composerIcon": "./assets/icon.svg",
+    "defaultPrompt": [
+      "Open my Todo board.",
+      "Add an idea to my backlog."
+    ]
+  }
+}

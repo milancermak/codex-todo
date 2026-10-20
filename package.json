@@ -1,0 +1,27 @@
+{
+  "name": "codex-todo",
+  "version": "0.4.1",
+  "private": true,
+  "type": "module",
+  "description": "A local TODO sidebar app for Codex",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node src/server.mjs --http",
+    "mcp": "node src/server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "package": "node scripts/package.mjs",
+    "verify:skills": "node scripts/verify-skills.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "@modelcontextprotocol/ext-apps": "1.7.5",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  },
+  "license": "MIT"
+}

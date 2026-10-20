@@ -1,0 +1,20 @@
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { VERSION } from '../src/version.js';
+
+const root = fileURLToPath(new URL('../', import.meta.url));
+const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+const revision = git(['rev-parse', '--verify', 'HEAD']);
+if (git(['status', '--porcelain', '--untracked-files=no'])) throw new Error('Commit the release changes before packaging.');
+const manifest = JSON.parse(git(['show', 'HEAD:plugin/plugin.json']));
+if (manifest.version !== VERSION) throw new Error('The committed plugin must match the release version.');
+const directory = resolve(root, 'releases');
+await mkdir(directory, { recursive: true });
+const filename = `codex-todo-plugin-${VERSION}.zip`;
+git(['archive', '--format=zip', '--prefix=codex-todo-plugin/', `--output=${resolve(directory, filename)}`, revision]);
+const sha256 = createHash('sha256').update(await readFile(resolve(directory, filename))).digest('hex');
+await writeFile(resolve(directory, 'SHA256SUMS'), `${sha256}  ${filename}\n`);
+process.stdout.write(`${filename}\nSource: ${revision}\nSHA-256: ${sha256}\n`);

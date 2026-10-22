@@ -1,6 +1,6 @@
 {
   "name": "codex-todo",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "type": "module",
   "description": "A local TODO sidebar app for Codex",

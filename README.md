@@ -124,6 +124,6 @@ codex plugin add codex-todo@todo
 
 With the plugin installed, `npm run verify:skills` checks discovery of all three enabled skills. It uses `codex` by default; set `TODO_CODEX_CLI` to another CLI executable when testing a particular host.
 
-After committing a clean release tree, `npm run package` creates the versioned source-and-bundle archive and `SHA256SUMS` under `releases/`. For version 0.4.1, the archive is `codex-todo-plugin-0.4.1.zip`. Packaging uses the committed Git tree, so uncommitted changes are not silently included.
+After committing a clean release tree, `npm run package` creates the versioned source-and-bundle archive and `SHA256SUMS` under `releases/`. For version 0.4.2, the archive is `codex-todo-plugin-0.4.2.zip`. Packaging uses the committed Git tree, so uncommitted changes are not silently included.
 
 See [COMPATIBILITY.md](COMPATIBILITY.md) for runtime contracts and verification limits, and [PUBLISHING.md](PUBLISHING.md) for release preparation. The project is available under the [MIT License](LICENSE); bundled dependencies retain the licenses recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

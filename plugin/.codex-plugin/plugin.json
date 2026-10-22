@@ -1,6 +1,6 @@
 {
   "name": "codex-todo",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A local Todo sidebar for Codex.",
   "author": {
     "name": "Codex Todo contributors"

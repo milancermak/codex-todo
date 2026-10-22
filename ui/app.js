@@ -1,5 +1,6 @@
 import { initialize, callTool, openCodex, subscribe } from "../src/client.js";
 import { parseCapture, setCaptureProject, setCaptureStatus } from "../src/capture.js";
+import { startTaskCompletion } from "./completion.js";
 
 const $ = (id) => document.getElementById(id);
 const statuses = ["today", "backlog"];
@@ -21,8 +22,10 @@ let confirmation = null;
 let toastTimer;
 let toastRemaining = 5500;
 let toastStartedAt = 0;
+let toastAction = null;
 const busyTasks = new Set();
 const rowErrors = new Map();
+const completingTasks = new Map();
 
 function icon(name) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -199,18 +202,24 @@ function render() {
   const filtered = Boolean(query || projectFilter !== "all");
   const projects = new Map(board.projects.map((project) => [project.id, project]));
   const matching = board.tasks.filter((task) => {
+    if (task.status === "done" && !completingTasks.has(task.id)) return false;
     if (projectFilter === "none" && task.projectId) return false;
     if (projectFilter !== "all" && projectFilter !== "none" && task.projectId !== projectFilter) return false;
     const haystack = [ideaText(task), projects.get(task.projectId)?.name].filter(Boolean).join(" ").toLocaleLowerCase();
     return !query || haystack.includes(query);
   });
   for (const status of statuses) {
-    const tasks = matching.filter((task) => taskSection(task) === status).sort((a, b) => Number(a.status === "done") - Number(b.status === "done") || new Date(b.createdAt) - new Date(a.createdAt));
-    $(`${status}-list`).replaceChildren(...tasks.map((task) => taskRow(task, projects.get(task.projectId))));
+    const tasks = matching.filter((task) => taskSection(task) === status).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const list = $(`${status}-list`);
+    const rows = tasks.map((task) => completingTasks.get(task.id)?.row || taskRow(task, projects.get(task.projectId)));
+    const desired = new Set(rows);
+    for (const child of Array.from(list.children)) if (!desired.has(child)) child.remove();
+    rows.forEach((row, index) => { if (list.children[index] !== row) list.insertBefore(row, list.children[index] || null); });
     $(`${status}-list`).hidden = !tasks.length;
     $(`${status}-count`).textContent = tasks.length;
     $(`${status}-count`).setAttribute("aria-label", `${tasks.length} ${tasks.length === 1 ? "task" : "tasks"}`);
-    $(`${status}-empty`).hidden = tasks.length > 0;
+    $(`${status}-empty`).hidden = false;
+    $(`${status}-empty`).setAttribute("aria-hidden", String(tasks.length > 0));
     $(`${status}-empty-copy`).textContent = filtered ? "No matching tasks." : status === "today" ? "Nothing planned for today." : "Keep ideas here for when you’re ready.";
   }
   $("task-sections").hidden = !ready;
@@ -227,7 +236,7 @@ function taskRow(task, project) {
   checkbox.disabled = busyTasks.has(task.id);
   checkbox.dataset.focusKey = `check-${task.id}`;
   checkbox.setAttribute("aria-label", `${task.status === "done" ? "Restore" : "Complete"} ${label}`);
-  checkbox.addEventListener("change", () => toggleTask(task));
+  checkbox.addEventListener("change", () => toggleTask(task, row));
   const content = element("div", "task-content");
   content.append(element("p", "task-title", ideaText(task)));
   const meta = element("div", "task-meta");
@@ -263,15 +272,47 @@ function taskRow(task, project) {
   return row;
 }
 
-async function toggleTask(task) {
+async function toggleTask(task, row) {
+  const checkbox = row.querySelector(".task-checkbox");
+  checkbox.checked = true;
+  if (busyTasks.has(task.id)) return;
   busyTasks.add(task.id);
   rowErrors.delete(task.id);
-  render();
+  row.querySelector(".row-error")?.remove();
+  checkbox.setAttribute("aria-disabled", "true");
+  for (const button of row.querySelectorAll("button")) button.disabled = true;
+  const animation = startTaskCompletion(row);
+  completingTasks.set(task.id, { row, animation });
+  let completed = false;
   try {
-    await mutate("todo_update", { id: task.id, status: task.status === "done" ? taskSection(task) : "done", previousStatus: taskSection(task) });
-    showToast(task.status === "done" ? "Task restored." : "Task completed.");
+    await Promise.all([
+      mutate("todo_update", { id: task.id, status: "done", previousStatus: taskSection(task) }),
+      animation.finished
+    ]);
+    if (board.tasks.find(entry => entry.id === task.id)?.status !== "done") return;
+    await animation.collapse();
+    completed = board.tasks.find(entry => entry.id === task.id)?.status === "done";
+    if (!completed) return;
+    showToast("Task completed.", {
+      label: "Undo",
+      focusKey: `check-${task.id}`,
+      run: () => mutate("todo_update", { id: task.id, status: taskSection(task) })
+    });
   } catch (error) { rowErrors.set(task.id, errorMessage(error)); }
-  finally { busyTasks.delete(task.id); render(); restoreRowFocus(`check-${task.id}`); }
+  finally {
+    let nextFocus;
+    if (completed && row.contains(document.activeElement)) {
+      const checkboxes = Array.from(document.querySelectorAll(".task-checkbox"));
+      const index = checkboxes.indexOf(checkbox);
+      const available = node => node !== checkbox && !node.disabled && node.getAttribute("aria-disabled") !== "true";
+      nextFocus = checkboxes.slice(index + 1).find(available)?.dataset.focusKey || checkboxes.slice(0, index).reverse().find(available)?.dataset.focusKey || "panel";
+    }
+    animation.cancel();
+    completingTasks.delete(task.id);
+    busyTasks.delete(task.id);
+    render();
+    if (nextFocus) restoreRowFocus(nextFocus);
+  }
 }
 
 async function launchTask(task, project, button) {
@@ -317,14 +358,42 @@ function resumeToastTimer() {
   toastTimer = setTimeout(() => { $("toast").hidden = true; toastStartedAt = 0; }, toastRemaining);
 }
 
-function showToast(message) {
+function showToast(message, action = null) {
   clearTimeout(toastTimer);
+  toastAction = action;
   $("toast-copy").textContent = message;
+  $("toast-undo").hidden = !action;
+  $("toast-undo").textContent = action?.label || "Undo";
+  $("toast-undo").disabled = false;
   $("toast").hidden = false;
   toastRemaining = 5500;
   toastStartedAt = 0;
   resumeToastTimer();
 }
+
+$("toast-undo").addEventListener("click", async () => {
+  const action = toastAction;
+  if (!action || $("toast-undo").disabled) return;
+  const ownedFocus = document.activeElement === $("toast-undo");
+  stopToastTimer();
+  $("toast-undo").disabled = true;
+  try {
+    await action.run();
+    if (toastAction === action) {
+      const restoreFocus = ownedFocus && (document.activeElement === $("toast-undo") || document.activeElement === document.body);
+      showToast("Task restored.");
+      if (restoreFocus) restoreRowFocus(action.focusKey);
+    }
+  } catch (error) {
+    if (toastAction === action) {
+      $("toast-copy").textContent = errorMessage(error);
+      $("toast-undo").disabled = false;
+      if (ownedFocus && document.activeElement === document.body) $("toast-undo").focus({ preventScroll: true });
+      toastRemaining = 5500;
+      resumeToastTimer();
+    }
+  }
+});
 
 async function loadBoard(force = false) {
   if (loading) return;

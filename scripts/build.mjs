@@ -9,7 +9,8 @@ const metadata = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'
 if (metadata.version !== VERSION) throw new Error('Package and runtime versions must match.');
 const result = await build({ entryPoints: [resolve(root, 'ui/app.js')], absWorkingDir: root, bundle: true, minify: true, format: 'iife', platform: 'browser', target: 'es2022', write: false, metafile: true, legalComments: 'none' });
 const template = await readFile(resolve(root, 'ui/index.html'), 'utf8');
-const css = await readFile(resolve(root, 'ui/styles.css'), 'utf8');
+const stylesheet = await build({ entryPoints: [resolve(root, 'ui/styles.css')], absWorkingDir: root, bundle: true, minify: true, target: 'es2022', write: false, legalComments: 'none' });
+const css = stylesheet.outputFiles[0].text;
 const script = result.outputFiles[0].text.replaceAll('</script', '<\\/script');
 const html = template.replace(/<link\b[^>]*href=["']\.\/styles\.css["'][^>]*>/, () => '<style>' + css + '</style>').replace(/<script\b[^>]*src=["']\.\/app\.js["'][^>]*><\/script>/, () => '<script>' + script + '</script>');
 if (html === template || html.includes('src="./app.js"')) throw new Error('Could not embed the Todo UI assets.');

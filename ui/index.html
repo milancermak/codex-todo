@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Your local Todo board in Codex. Capture ideas, plan today, and open project chats.">
     <meta name="color-scheme" content="light dark">
     <title>Todo</title>
     <link rel="stylesheet" href="./styles.css">
@@ -14,7 +15,7 @@
         <label class="sr-only" for="capture-title">What would you like to work on?</label>
         <div id="capture-editor" class="capture-editor">
           <div id="capture-backdrop" class="capture-backdrop" aria-hidden="true"><div id="capture-highlight" class="capture-highlight"></div></div>
-          <textarea id="capture-title" class="capture-title" name="title" rows="3" maxlength="20000" placeholder="What’s on your mind?&#10;You can use #project-name to add the task into a project." required disabled></textarea>
+          <textarea id="capture-title" class="capture-title" name="title" rows="3" maxlength="20000" placeholder="What’s on your mind?" required disabled></textarea>
         </div>
         <div class="capture-toolbar">
           <button id="capture-submit" class="button primary" type="submit" disabled>Add task</button>
@@ -41,7 +42,7 @@
         </div>
       </section>
     </main>
-    <dialog id="task-dialog" class="dialog" aria-labelledby="task-dialog-title"><form id="edit-form" class="dialog-content"><div class="dialog-header"><h2 id="task-dialog-title">Edit task</h2><button class="icon-button" type="button" data-close-dialog="task-dialog" aria-label="Close task editor"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div><label class="form-field">Idea<textarea id="edit-title" rows="5" maxlength="20000" required></textarea></label><div class="form-columns"><label class="form-field">Project<select id="edit-project"><option value="">No project</option></select></label><label class="form-field">List<select id="edit-status"><option value="today">Today</option><option value="backlog">Backlog</option></select></label></div><p id="edit-error" class="field-error" role="alert" hidden></p><div class="dialog-actions"><button id="delete-task" class="text-button danger" type="button">Delete task</button><div class="action-group"><button class="button secondary" type="button" data-close-dialog="task-dialog">Cancel</button><button id="edit-save" class="button primary" type="submit">Save changes</button></div></div></form></dialog>
+    <dialog id="task-dialog" class="dialog" aria-labelledby="task-dialog-title"><form id="edit-form" class="dialog-content"><div class="dialog-header"><h2 id="task-dialog-title">Edit task</h2><button class="icon-button" type="button" data-close-dialog="task-dialog" aria-label="Close task editor"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div><label class="form-field"><span class="sr-only">Idea</span><textarea id="edit-title" rows="5" maxlength="20000" required></textarea></label><div class="form-columns"><label class="form-field">Project<span class="form-select"><select id="edit-project"><option value="">No project</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></span></label><label class="form-field">List<span class="form-select"><select id="edit-status"><option value="today">Today</option><option value="backlog">Backlog</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></span></label></div><p id="edit-error" class="field-error" role="alert" hidden></p><div class="dialog-actions"><button id="delete-task" class="text-button danger" type="button">Delete task</button><div class="action-group"><button class="button secondary" type="button" data-close-dialog="task-dialog">Cancel</button><button id="edit-save" class="button primary" type="submit">Save changes</button></div></div></form></dialog>
     <dialog id="confirm-dialog" class="dialog confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-copy"><div class="dialog-content"><h2 id="confirm-title">Delete this task?</h2><p id="confirm-copy" class="dialog-description"></p><p id="confirm-error" class="field-error" role="alert" hidden></p><div class="dialog-actions confirm-actions"><button id="confirm-cancel" class="button secondary" type="button">Cancel</button><button id="confirm-submit" class="button destructive" type="button">Delete task</button></div></div></dialog>
     <div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="toast-copy"></span><button id="toast-undo" class="text-button" type="button" hidden>Undo</button><button id="toast-dismiss" class="icon-button" type="button" aria-label="Dismiss notification"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div>
     <script type="module" src="./app.js"></script>

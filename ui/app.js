@@ -8,7 +8,7 @@ const statusNames = { today: "Today", backlog: "Backlog" };
 const icons = {
   folder: '<path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',
   arrow: '<path d="M7 17 17 7M7 7h10v10"/>',
-  more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'
+  edit: '<path d="m15 5 4 4M5 15l-1 5 5-1L20 8a2.83 2.83 0 0 0-4-4Z"/>'
 };
 let board = { tasks: [], projects: [], revision: 0 };
 let ready = false;
@@ -261,7 +261,7 @@ function taskRow(task, project) {
   edit.title = "Edit task";
   edit.dataset.focusKey = `edit-${task.id}`;
   edit.disabled = busyTasks.has(task.id);
-  edit.append(icon("more"));
+  edit.append(icon("edit"));
   edit.addEventListener("click", () => showTaskEditor(task));
   row.append(checkbox, content, edit);
   if (rowErrors.has(task.id)) {

@@ -22,7 +22,7 @@ Select the skill in the `/` or `$` picker. Hosts can display the full names `cod
 
 ### Using the sidebar app
 
-Type an idea and press Enter to add it. Shift+Enter adds a line. The default destination is Backlog. The green text controls below the divider select Today or Backlog and an optional project.
+Type an idea and press Enter to add it. Shift+Enter adds a line. The default destination is Backlog. The green text controls at the bottom of the capture box select Today or Backlog and an optional project.
 
 Project tags can appear anywhere in an idea:
 
@@ -33,7 +33,7 @@ Project tags can appear anywhere in an idea:
 
 Exact saved project names match automatically, ignoring case and equivalent spaces or dashes. Multiword and quoted names work. A matching tag turns green, and the project control shows its destination. Partial, misspelled or unknown tags stay plain and show No project; choose a project explicitly or edit the tag before saving. Selecting a project or list updates conflicting annotations so the displayed destination matches the saved task. `/todo` and `/backlog` select Backlog; `/today` selects Today. Literal references such as `C#` and `#1` remain ordinary text.
 
-The checkbox crosses out a task line by line, then folds the row away once the change is saved. Completed tasks stay saved and disappear from Today and Backlog; use Undo in the completion notification to restore one. Reduced motion uses a brief fade. Use a row's menu button to edit, move or delete it. Search covers idea text and project names. Legacy separate titles and notes appear together and remain intact when edited.
+The checkbox crosses out a task line by line, then folds the row away once the change is saved. Completed tasks stay saved and disappear from Today and Backlog; use Undo in the completion notification to restore one. Reduced motion uses a brief fade. Use a row's pencil button to edit, move or delete it. Search covers idea text and project names. Legacy separate titles and notes appear together and remain intact when edited.
 
 **Open in Codex** uses a [documented chat link](https://learn.chatgpt.com/docs/reference/commands#deep-links) to fill the new chat's composer and select the saved project folder. It does not send the prompt or mark the task complete. If the host refuses the link, the app offers a copyable link instead. Automatic chat backlinks and completion detection are outside the current scope.
 

@@ -39,10 +39,12 @@ The checkbox crosses out a task line by line, then folds the row away once the c
 
 ## Installation
 
-You need the Codex CLI, and Node.js (v22.13 minimum; latest 24 LTS recommended). Installation does not require npm or a source build, just run:
+[![Add to Codex](assets/add-to-codex.svg)](https://chatgpt.com/codex/open-app?q=Add%20https%3A%2F%2Fgithub.com%2Fmilancermak%2Fcodex-todo%20as%20a%20Codex%20plugin%20marketplace%2C%20then%20install%20codex-todo%40todo%20and%20verify%20the%20installation.)
+
+You need the Codex CLI, and Node.js (v22.13 minimum; latest 24 LTS recommended). Installation does not require npm or a source build. Send the prefilled setup prompt to install, or run:
 
 ```sh
-codex plugin marketplace add milancermak/codex-todo-plugin
+codex plugin marketplace add milancermak/codex-todo
 codex plugin add codex-todo@todo
 ```
 
